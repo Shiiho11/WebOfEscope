@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div><input type="button" id="zz" onclick="submitData()" value="example"></div>
+<script>
+var but = document.getElementById("zz");
+function submitData(){
+  var XHR = new XMLHttpRequest();
+  XHR.onreadystatechange = function() {
+    if (XHR.readyState == 4) {
+      if ((XHR.status >= 200 && XHR.status < 300) || XHR.status == 304) {
+         console.log(XHR.responseText);
+         var data_string = XHR.responseText;
+         //var data_json = JSON.parse(XHR.responseText)['server']//json
+         // console.log(JSON.parse(XHR.responseText)['server']);
+      }
+      else{
+        console.log("Request was unsuccessful: "+XHR.status);
+      }
+    }
+  };
+  XHR.open("get","http://127.0.0.1:8080/escope/api/test",true);
+  XHR.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  XHR.send(); 
+}
+
+</script>
+</body>
+</html>
