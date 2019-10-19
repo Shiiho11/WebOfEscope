@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>edu.hdu</groupId>
-    <artifactId>demo</artifactId>
+    <artifactId>WebOfEscope</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>WebOfEscope</name>
     <description>Web Of Escope</description>
@@ -29,6 +29,22 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.15</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/com.digi.xbee/xbee-java-library -->
+        <dependency>
+            <groupId>com.digi.xbee</groupId>
+            <artifactId>xbee-java-library</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
