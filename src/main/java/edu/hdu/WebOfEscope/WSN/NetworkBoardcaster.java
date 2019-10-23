@@ -74,14 +74,14 @@ public class NetworkBoardcaster implements Runnable {
                 //     System.out.println(device.getReceiveTimeout());
                 device.sendBroadcastData(dataToSend);
                 getNowNetwork();
-            } catch (XBeeException e) {
+            } catch (XBeeException | SQLException e) {
                 if(e instanceof TimeoutException) System.out.println("Boardcast complished!");
                 else e.printStackTrace();
             }
 
         }
 
-        private void getNowNetwork(){
+        private void getNowNetwork() throws SQLException {
             execSQL("delete from SensorTable where 1=1");
             XBeeNetwork xBeeNetwork;
             xBeeNetwork = device.getNetwork();
@@ -93,8 +93,8 @@ public class NetworkBoardcaster implements Runnable {
             }
         }
 
-        private boolean execSQL(String sQL) {
-            Statement statement;
+        private boolean execSQL(String sQL) throws SQLException {
+            Statement statement = null;
             try {
                 statement = this.sqlconnection.createStatement();
                 boolean hasResult = statement.execute(sQL);
@@ -111,6 +111,9 @@ public class NetworkBoardcaster implements Runnable {
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
+            } finally {
+                //if(statement != null) statement.close();
+                //if(sqlconnection != null) sqlconnection.close();
             }
         }
     }

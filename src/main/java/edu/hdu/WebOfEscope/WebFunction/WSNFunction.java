@@ -39,4 +39,18 @@ public class WSNFunction {
         }
     }
 
+    public static void ClaerRealTime(Connection sqlConnetion) throws SQLException {
+        Statement statement = null;
+        try {
+            statement = sqlConnetion.createStatement();
+            statement.executeUpdate("DELETE from RealTime");
+            System.out.println("claer WSN real time");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            //if(statement != null) statement.close();
+            //if(sqlconnection != null) sqlconnection.close();
+        }
+    }
+
 }
