@@ -96,7 +96,7 @@ public class NetworkBoardcaster implements Runnable {
         private boolean execSQL(String sQL) {
             Statement statement;
             try {
-                statement = sqlconnection.createStatement();
+                statement = this.sqlconnection.createStatement();
                 boolean hasResult = statement.execute(sQL);
                 if (hasResult) {
                     ResultSet rs = statement.getResultSet();

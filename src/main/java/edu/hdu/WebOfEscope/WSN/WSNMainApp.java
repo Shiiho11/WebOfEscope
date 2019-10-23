@@ -18,6 +18,7 @@ public class WSNMainApp {
             device.open();
             NetworkBoardcaster thdStationBoardcast=new NetworkBoardcaster(device, sqlConnection);
             new Thread(thdStationBoardcast).start();
+            device.addDataListener(new StationListener(sqlConnection));
         } catch (XBeeException e) {
             e.printStackTrace();
         } finally {
