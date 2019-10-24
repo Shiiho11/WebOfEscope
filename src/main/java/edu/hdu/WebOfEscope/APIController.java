@@ -21,7 +21,7 @@ public class APIController {
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public String test(){
-        return "API test" + (i++);
+        return "API test: " + (i++);
     }
 
     @RequestMapping(value = "/WSN/getRealTime", method = RequestMethod.GET)

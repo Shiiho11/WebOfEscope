@@ -1,10 +1,107 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>test</title>
 </head>
+
 <body>
-test
+    <h1>Test</h1>
+
+    <div>
+        <input type="button" id="test" value="test" onclick="getTest()"><input type="text" id="testText">
+    </div>
+
+    <div>
+        <input type="button" id="WSNrealTime" value="WSNrealTime" onclick="getWSNrealTime()">
+        <input type="button" id="WSNrealTimeAuto" value="WSNrealTimeAuto" onclick="getWSNrealTimeAuto()">
+        <input type="button" id="WSNrealTimeStop" value="WSNrealTimeStop" onclick="getWSNrealTimeStop()">
+        <br>
+        <table id="WSNrealTimeTable" border="1">
+            <tr>
+                <th>address</th>
+                <th>humidity</th>
+                <th>humidityTime</th>
+                <th>temperature</th>
+                <th>temperatureTime</th>
+                <th>light</th>
+                <th>lightTime</th>
+                <th>smog</th>
+                <th>smogTime</th>
+                <th>ultra</th>
+                <th>ultraTime</th>
+            </tr>
+        </table>
+    </div>
+
 </body>
+
+<script>
+
+    function getTest() {
+        var testText = document.getElementById("testText");
+        var testXHR = new XMLHttpRequest();
+        testXHR.onreadystatechange = function () {
+            if(testXHR.readyState == 4) {
+                if((testXHR.status >= 200 && testXHR.status < 300) || testXHR.status == 304) {
+                    console.log(testXHR.responseText);
+                    testText.value = testXHR.responseText;
+                } else {
+                    console.log("test Request was unsuccessful: "+testXHR.status);
+                }
+            }
+        }
+        testXHR.open("GET", "http://127.0.0.1:8080/escope/api/test",true);
+        testXHR.send();
+    }
+
+    function getWSNrealTime() {
+        var table = document.getElementById("WSNrealTimeTable");
+        var XHR = new XMLHttpRequest();
+        XHR.onreadystatechange = function () {
+            if(XHR.readyState == 4) {
+                if((XHR.status >= 200 && XHR.status < 300) || XHR.status == 304) {
+                    console.log(XHR.responseText);
+                    var response = JSON.parse(XHR.responseText);
+                    for(var i = 1;i<table.rows.length;i++){
+                        table.deleteRow(1);
+                    }//清空表格
+                    for(var i=0;i<response.length;i++){
+                        var row = table.insertRow(i+1);
+                        var address = row.insertCell(0);         address.innerHTML=response[i].address;
+                        var humidity = row.insertCell(1);        humidity.innerHTML=response[i].humidity;
+                        var humidityTime = row.insertCell(2);    humidityTime.innerHTML=response[i].humidityTime;
+                        var temperature = row.insertCell(3);     temperature.innerHTML=response[i].temperature;
+                        var temperatureTime = row.insertCell(4); temperatureTime.innerHTML=response[i].temperatureTime;
+                        var light = row.insertCell(5);           light.innerHTML=response[i].light;
+                        var lightTime = row.insertCell(6);       lightTime.innerHTML=response[i].lightTime;
+                        var smog = row.insertCell(7);            smog.innerHTML=response[i].smog;
+                        var smogTime = row.insertCell(8);        smogTime.innerHTML=response[i].smogTime;
+                        var ultra = row.insertCell(9);           ultra.innerHTML=response[i].ultra;
+                        var ultraTime = row.insertCell(10);      ultraTime.innerHTML=response[i].ultraTime;
+                    }//插入数据
+                } else {
+                    console.log("WSNrealTime Request was unsuccessful: "+XHR.status);
+                }
+            }
+        }
+        XHR.open("GET", "http://127.0.0.1:8080/escope/api/WSN/getRealTime",true);
+        XHR.send();
+    }
+
+    var auto;
+
+    function getWSNrealTimeAuto() {
+        auto = setInterval(getWSNrealTime,5000);
+        console.log("WSNrealTimeAuto");
+    }
+
+    function getWSNrealTimeStop() {
+        clearInterval(auto);
+        console.log("WSNrealTimeStop");
+    }
+
+</script>
+
 </html>
