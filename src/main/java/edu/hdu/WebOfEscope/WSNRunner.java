@@ -1,8 +1,6 @@
 package edu.hdu.WebOfEscope;
 
-import edu.hdu.WebOfEscope.WSN.StationListener;
 import edu.hdu.WebOfEscope.WSN.WSNMainApp;
-import edu.hdu.WebOfEscope.WSN.WSNSQLCoonection;
 import edu.hdu.WebOfEscope.WebFunction.WSNFunction;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -17,7 +15,7 @@ public class WSNRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        WSNFunction.ClaerRealTime(WSNSQLCoonection.getConnection());//claer WSN resl time
+        //WSNFunction.ClaerData("RealTime");//claer data (table: RealTime)
         WSNMainApp.WSNmain();//WSN程序
     }
 
