@@ -39,7 +39,7 @@ public class WSNFunction {
         }
     }
 
-    public static void ClaerData(String table) throws SQLException {
+    public static void claerData(String table) throws SQLException {
         Connection connection = WSNSQLCoonection.getConnection();
         Statement statement = null;
         try {

@@ -15,7 +15,7 @@ public class WSNRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //WSNFunction.ClaerData("RealTime");//claer data (table: RealTime)
+        //WSNFunction.claerData("RealTime");//claer data (table: RealTime)
         WSNMainApp.WSNmain();//WSN程序
     }
 
