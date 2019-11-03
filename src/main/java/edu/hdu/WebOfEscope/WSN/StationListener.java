@@ -132,8 +132,8 @@ public class StationListener implements IDataReceiveListener {
      * @param remoteXBeeDevice
      */
     private void writeToDatabase(String head, Date time, int value, RemoteXBeeDevice remoteXBeeDevice) throws SQLException {
-        execSQL("insert into "+head+"(value,time,address) VALUES ('"+value+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
-        execSQL("INSERT INTO SensorValue(value,sensor,time,address) VALUES ('"+value+"','"+head+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
+        //execSQL("insert into "+head+"(value,time,address) VALUES ('"+value+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
+        //execSQL("INSERT INTO SensorValue(value,sensor,time,address) VALUES ('"+value+"','"+head+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
 
         if(execSQL("SELECT address from RealTime WHERE address='"+remoteXBeeDevice.get16BitAddress()+"'") > 0) {
             execSQL("UPDATE RealTime SET "+head+"="+value+","+head+"Time='"+new Timestamp(time.getTime())+"' WHERE address='"+remoteXBeeDevice.get16BitAddress()+"'");
@@ -142,8 +142,8 @@ public class StationListener implements IDataReceiveListener {
         }
     }
     private void writeToDatabase(String head, Date time, double value, RemoteXBeeDevice remoteXBeeDevice) throws SQLException {
-        execSQL("insert into "+head+"(value,time,address) VALUES ('"+value+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
-        execSQL("INSERT INTO SensorValue(value,sensor,time,address) VALUES ('"+value+"','"+head+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
+        //execSQL("insert into "+head+"(value,time,address) VALUES ('"+value+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
+        //execSQL("INSERT INTO SensorValue(value,sensor,time,address) VALUES ('"+value+"','"+head+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
 
         if(execSQL("SELECT address from RealTime WHERE address='"+remoteXBeeDevice.get16BitAddress()+"'") > 0) {
             execSQL("UPDATE RealTime SET "+head+"="+value+","+head+"Time='"+new Timestamp(time.getTime())+"' WHERE address='"+remoteXBeeDevice.get16BitAddress()+"'");

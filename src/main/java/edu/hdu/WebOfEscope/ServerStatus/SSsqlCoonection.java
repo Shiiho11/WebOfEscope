@@ -1,13 +1,13 @@
-package edu.hdu.WebOfEscope.WSN;
+package edu.hdu.WebOfEscope.ServerStatus;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class WSNSQLCoonection {
+public class SSsqlCoonection {
 
     //private static String driver="com.mysql.cj.jdbc.Driver"; //Mysql驱动
-    private static String url   ="jdbc:mysql://localhost:3306/WirelessSensorRecord?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC"; //指定数据库
+    private static String url   ="jdbc:mysql://localhost:3306/ServerStatus?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC"; //指定数据库
     private static String user  ="root";
     private static String passwd="hdu17052223";
 
@@ -16,12 +16,11 @@ public class WSNSQLCoonection {
         try{
             //Class.forName(driver);//加载
             conn = DriverManager.getConnection(url, user, passwd);
-        //} catch (ClassNotFoundException e) {
-        //    e.printStackTrace();
+            //} catch (ClassNotFoundException e) {
+            //    e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return conn;
     }
 }

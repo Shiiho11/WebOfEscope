@@ -1,23 +1,22 @@
 package edu.hdu.WebOfEscope.WebFunction;
 
-import edu.hdu.WebOfEscope.WSN.WSNSQLCoonection;
+import edu.hdu.WebOfEscope.WSN.WSNsqlCoonection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 
 public class WSNFunction {
 
     public static ArrayList<HashMap<String, String>> getRealTime() {
         try {
-            Connection sqlConnection = WSNSQLCoonection.getConnection();
+            Connection sqlConnection = WSNsqlCoonection.getConnection();
             Statement statement = sqlConnection.createStatement();
             String sql = "SELECT * from RealTime";
             ResultSet rs = statement.executeQuery(sql);
 
             ArrayList<HashMap<String, String>> list = new ArrayList<>();
+            HashMap<String, String> map = new HashMap<>();
             while(rs.next()){
-                HashMap<String, String> map = new HashMap<>();
                 map.put("address",rs.getString("address"));
                 map.put("humidity",rs.getString("humidity"));
                 map.put("humidityTime",rs.getString("humidityTime"));
@@ -30,8 +29,12 @@ public class WSNFunction {
                 map.put("ultra",rs.getString("smog"));
                 map.put("ultraTime",rs.getString("smogTime"));
                 list.add(map);
+                map.clear();
             }
 
+            //rs.close();
+            //statement.close();
+            //sqlConnection.close();
             return list;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -40,7 +43,7 @@ public class WSNFunction {
     }
 
     public static void claerData(String table) throws SQLException {
-        Connection connection = WSNSQLCoonection.getConnection();
+        Connection connection = WSNsqlCoonection.getConnection();
         Statement statement = null;
         try {
             statement = connection.createStatement();

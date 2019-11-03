@@ -13,7 +13,7 @@ public class WSNMainApp {
 
     public static void WSNmain(){
         XBeeDevice device = new XBeeDevice(PORT,BAUD_RATE);
-        Connection sqlConnection = WSNSQLCoonection.getConnection();
+        Connection sqlConnection = WSNsqlCoonection.getConnection();
         try {
             device.open();
             NetworkBoardcaster thdStationBoardcast=new NetworkBoardcaster(device, sqlConnection);
