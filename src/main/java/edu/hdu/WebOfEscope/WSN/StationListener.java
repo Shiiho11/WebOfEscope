@@ -16,6 +16,7 @@ public class StationListener implements IDataReceiveListener {
     private static final byte LightCode=0x03; //光线
     private static final byte SmogCode=0x04; //烟雾
     private static final byte UltraCode=0x05;//红外入侵
+    private static final byte CO2Code=0x06;//CO2
     private static final byte TIME_SYNC_ACK=0x5B;//时间同步
     private static final byte TIME_SYNC=0x6A;//时间同步确认
     private static final byte ErrorCode=0x00; //错误代码
@@ -40,7 +41,7 @@ public class StationListener implements IDataReceiveListener {
                         break;
                     case HumidityCode:
                         nowTime = getRecordTime(getMsg);
-                        double humidity = 0;
+                        float humidity = 0;
                         if (getMsg.length == 7) {//DHT11
                             String humidityString = String.format("%d.%d", getMsg[1], getMsg[2]);
                             humidity = Float.parseFloat(humidityString);
@@ -54,7 +55,7 @@ public class StationListener implements IDataReceiveListener {
                         break;
                     case TemperatureCode:
                         nowTime = getRecordTime(getMsg);
-                        double temperature = 0;
+                        float temperature = 0;
                         if (getMsg.length == 7) {//DHT11
                             String temperatureString = String.format("%d.%d", getMsg[1], getMsg[2]);
                             temperature = Float.parseFloat(temperatureString);
@@ -92,6 +93,19 @@ public class StationListener implements IDataReceiveListener {
                         data.put("value",ultra);
                         data.put("address",xbeeMessage.getDevice().get16BitAddress());
                         WSNcache.add(data);
+                        break;
+                    case CO2Code:
+                        nowTime = getRecordTime(getMsg);
+                        float CO2 = 0;
+                        if (getMsg.length == 7) {
+                            String CO2String = String.format("%d.%d", getMsg[1], getMsg[2]);
+                            CO2 = Float.parseFloat(CO2String);
+                            data.put("head","CO2");
+                            data.put("time",nowTime);
+                            data.put("value",CO2);
+                            data.put("address",xbeeMessage.getDevice().get16BitAddress());
+                            WSNcache.add(data);
+                        }
                         break;
                     case ErrorCode:
                         System.out.println("Remote Node Error");
