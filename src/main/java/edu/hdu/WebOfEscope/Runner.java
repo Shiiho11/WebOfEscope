@@ -2,6 +2,7 @@ package edu.hdu.WebOfEscope;
 
 import edu.hdu.WebOfEscope.ServerStatus.SSmain;
 import edu.hdu.WebOfEscope.WSN.WSNMainApp;
+//import edu.hdu.WebOfEscope.WSNtest.WSNtestApp;
 import edu.hdu.WebOfEscope.WebFunction.WSNFunction;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -17,8 +18,9 @@ public class Runner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         //SSmain.SSmain();//Server Status
-        WSNFunction.claerData("RealTime");//claer data (table: RealTime)
-        WSNMainApp.WSNmain();//WSN程序
+        //WSNFunction.claerData("sensor");//claer data
+        //WSNMainApp.WSNmain();//WSN程序
+        //WSNtestApp.WSNmain();
     }
 
 }

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class SSsqlCoonection {
 
     //private static String driver="com.mysql.cj.jdbc.Driver"; //Mysql驱动
-    private static String url   ="jdbc:mysql://localhost:3306/ServerStatus?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC"; //指定数据库
+    private static String url   ="jdbc:mysql://localhost:3306/ServerStatus?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true"; //指定数据库
     private static String user  ="root";
     private static String passwd="hdu17052223";
 

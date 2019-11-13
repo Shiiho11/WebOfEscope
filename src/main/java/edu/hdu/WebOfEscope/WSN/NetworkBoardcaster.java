@@ -5,12 +5,7 @@ import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
-
-import java.sql.*;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * Network Boardcaster,sending the time sync and finding other device in network
@@ -21,18 +16,16 @@ public class NetworkBoardcaster implements Runnable {
     private static final byte TIME_SYNC=0x6A;
 
     private XBeeDevice device;
-    private Connection sqlConnection;
 
 
-    public NetworkBoardcaster(XBeeDevice device, Connection connection){
+    public NetworkBoardcaster(XBeeDevice device){
         this.device = device;
-        this.sqlConnection = connection;
     }
 
     @Override
     public void run(){
         Timer boardcastTimer = new Timer();
-        boardcastTimer.schedule(new boardcastTask(device, sqlConnection), 0, 5000);
+        boardcastTimer.schedule(new boardcastTask(device), 0, 10000);
     }
 
     /**
@@ -40,12 +33,10 @@ public class NetworkBoardcaster implements Runnable {
      */
     private static class boardcastTask extends TimerTask{
         private XBeeDevice device;
-        private Connection sqlconnection;
 
 
-        boardcastTask(XBeeDevice device,Connection connection){
+        boardcastTask(XBeeDevice device){
             this.device = device;
-            this.sqlconnection = connection;
         }
 
         @Override
@@ -74,47 +65,25 @@ public class NetworkBoardcaster implements Runnable {
                 //     System.out.println(device.getReceiveTimeout());
                 device.sendBroadcastData(dataToSend);
                 getNowNetwork();
-            } catch (XBeeException | SQLException e) {
+            } catch (XBeeException e) {
                 if(e instanceof TimeoutException) System.out.println("Boardcast complished!");
                 else e.printStackTrace();
             }
 
         }
 
-        private void getNowNetwork() throws SQLException {
-            execSQL("delete from SensorTable where 1=1");
+        private void getNowNetwork() {
             XBeeNetwork xBeeNetwork;
             xBeeNetwork = device.getNetwork();
             List<RemoteXBeeDevice> remoteXBeeDeviceList;
             remoteXBeeDeviceList = xBeeNetwork.getDevices();
+            ArrayList<String> Online = new ArrayList<>();
             for(int i=0;i<remoteXBeeDeviceList.size();i++){
                 System.out.println("16BitAddress:" + remoteXBeeDeviceList.get(i).get16BitAddress().toString());//debug line
-                execSQL("insert into SensorTable(name) value('"+remoteXBeeDeviceList.get(i).get16BitAddress().toString()+"')");
+                Online.add(remoteXBeeDeviceList.get(i).get16BitAddress().toString());
             }
+            WSNcache.setOnline(Online);
         }
 
-        private boolean execSQL(String sQL) throws SQLException {
-            Statement statement = null;
-            try {
-                statement = this.sqlconnection.createStatement();
-                boolean hasResult = statement.execute(sQL);
-                if (hasResult) {
-                    ResultSet rs = statement.getResultSet();
-                    while (rs.next()) {
-                        System.out.println(rs.getShort(1) + "\t");
-                    }
-                    System.out.println();
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
-            } finally {
-                //if(statement != null) statement.close();
-                //if(sqlconnection != null) sqlconnection.close();
-            }
-        }
     }
 }

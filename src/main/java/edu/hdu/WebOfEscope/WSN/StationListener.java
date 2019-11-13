@@ -1,15 +1,14 @@
 package edu.hdu.WebOfEscope.WSN;
 
-import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.XBeeMessage;
 
-import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class StationListener implements IDataReceiveListener {
     private static final byte HumidityCode=0x01; //湿度
@@ -21,12 +20,6 @@ public class StationListener implements IDataReceiveListener {
     private static final byte TIME_SYNC=0x6A;//时间同步确认
     private static final byte ErrorCode=0x00; //错误代码
 
-    private Connection sqlConnetion;
-
-    public StationListener(Connection connection){
-        sqlConnetion=connection;
-    }
-
     /**
      *  the data receive method
      * @param xbeeMessage
@@ -34,6 +27,7 @@ public class StationListener implements IDataReceiveListener {
     @Override
     public void dataReceived(XBeeMessage xbeeMessage) {
         Date nowTime=null;
+        HashMap<String,Object> data = new HashMap<>();
 
         if(!xbeeMessage.isBroadcast()){
             byte [] getMsg;
@@ -52,7 +46,11 @@ public class StationListener implements IDataReceiveListener {
                             humidity = Float.parseFloat(humidityString);
                         } else {
                         }//HDC1080
-                        writeToDatabase("humidity", nowTime, humidity, xbeeMessage.getDevice());
+                        data.put("head","humidity");
+                        data.put("time",nowTime);
+                        data.put("value",humidity);
+                        data.put("address",xbeeMessage.getDevice().get16BitAddress());
+                        WSNcache.add(data);
                         break;
                     case TemperatureCode:
                         nowTime = getRecordTime(getMsg);
@@ -62,22 +60,38 @@ public class StationListener implements IDataReceiveListener {
                             temperature = Float.parseFloat(temperatureString);
                         } else {
                         }//HDC1080
-                        writeToDatabase("temperature", nowTime, temperature, xbeeMessage.getDevice());
+                        data.put("head","temperature");
+                        data.put("time",nowTime);
+                        data.put("value",temperature);
+                        data.put("address",xbeeMessage.getDevice().get16BitAddress());
+                        WSNcache.add(data);
                         break;
                     case LightCode:
                         nowTime = getRecordTime(getMsg);
                         int light = ByteArrayToInt2(getMsg, 2);
-                        writeToDatabase("light", nowTime, light, xbeeMessage.getDevice());
+                        data.put("head","light");
+                        data.put("time",nowTime);
+                        data.put("value",light);
+                        data.put("address",xbeeMessage.getDevice().get16BitAddress());
+                        WSNcache.add(data);
                         break;
                     case SmogCode:
                         nowTime = getRecordTime(getMsg);
                         int smog = ByteArrayToInt2(getMsg, 2);
-                        writeToDatabase("smog", nowTime, smog, xbeeMessage.getDevice());
+                        data.put("head","smog");
+                        data.put("time",nowTime);
+                        data.put("value",smog);
+                        data.put("address",xbeeMessage.getDevice().get16BitAddress());
+                        WSNcache.add(data);
                         break;
                     case UltraCode:
                         nowTime = getRecordTime(getMsg);
                         int ultra = (int) getMsg[2];
-                        writeToDatabase("ultra", nowTime, ultra, xbeeMessage.getDevice());
+                        data.put("head","ultra");
+                        data.put("time",nowTime);
+                        data.put("value",ultra);
+                        data.put("address",xbeeMessage.getDevice().get16BitAddress());
+                        WSNcache.add(data);
                         break;
                     case ErrorCode:
                         System.out.println("Remote Node Error");
@@ -87,7 +101,7 @@ public class StationListener implements IDataReceiveListener {
                     default:
                         break;
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -122,64 +136,6 @@ public class StationListener implements IDataReceiveListener {
             return -1;
         }
         return (int) (((bArr[start-1] & 0xff) << 8)|((bArr[start] & 0xff) << 0));
-    }
-
-    /**
-     * writeToDatabase
-     * @param head
-     * @param time
-     * @param value
-     * @param remoteXBeeDevice
-     */
-    private void writeToDatabase(String head, Date time, int value, RemoteXBeeDevice remoteXBeeDevice) throws SQLException {
-        //execSQL("insert into "+head+"(value,time,address) VALUES ('"+value+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
-        //execSQL("INSERT INTO SensorValue(value,sensor,time,address) VALUES ('"+value+"','"+head+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
-
-        if(execSQL("SELECT address from RealTime WHERE address='"+remoteXBeeDevice.get16BitAddress()+"'") > 0) {
-            execSQL("UPDATE RealTime SET "+head+"="+value+","+head+"Time='"+new Timestamp(time.getTime())+"' WHERE address='"+remoteXBeeDevice.get16BitAddress()+"'");
-        } else {
-            execSQL("INSERT INTO RealTime(address,"+head+","+head+"Time) VALUES('"+remoteXBeeDevice.get16BitAddress()+"',"+value+",'"+new Timestamp(time.getTime())+"')");
-        }
-    }
-    private void writeToDatabase(String head, Date time, double value, RemoteXBeeDevice remoteXBeeDevice) throws SQLException {
-        //execSQL("insert into "+head+"(value,time,address) VALUES ('"+value+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
-        //execSQL("INSERT INTO SensorValue(value,sensor,time,address) VALUES ('"+value+"','"+head+"','"+new Timestamp(time.getTime())+"','"+remoteXBeeDevice.get16BitAddress()+"')");
-
-        if(execSQL("SELECT address from RealTime WHERE address='"+remoteXBeeDevice.get16BitAddress()+"'") > 0) {
-            execSQL("UPDATE RealTime SET "+head+"="+value+","+head+"Time='"+new Timestamp(time.getTime())+"' WHERE address='"+remoteXBeeDevice.get16BitAddress()+"'");
-        } else {
-            execSQL("INSERT INTO RealTime(address,"+head+","+head+"Time) VALUES('"+remoteXBeeDevice.get16BitAddress()+"',"+value+",'"+new Timestamp(time.getTime())+"')");
-        }
-    }
-
-    /**
-     * execSQL
-     * @param sql
-     * @return
-     */
-    private int execSQL(String sql) throws SQLException {
-        Statement statement = null;
-        try {
-            int size = 0;
-            statement = this.sqlConnetion.createStatement();
-            boolean hasResult = statement.execute(sql);
-            if (hasResult) {
-                ResultSet rs = statement.getResultSet();
-                while (rs.next()) {
-                    System.out.println("rs:"+rs.getShort(1) + "\t");
-                    size++;
-                }
-                return size;
-            } else {
-                return -1;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return -1;
-        } finally {
-            //if (statement != null) statement.close();
-            //if(sqlconnection != null) sqlconnection.close();
-        }
     }
 
 }

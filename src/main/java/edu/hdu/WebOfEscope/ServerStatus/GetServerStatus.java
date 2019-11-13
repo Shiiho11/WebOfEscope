@@ -17,13 +17,12 @@ public class GetServerStatus implements Runnable {
             String sql = "SELECT * from ServerInfo";
             ResultSet rs = statement.executeQuery(sql);
 
-            HashMap<String, String> map = new HashMap<>();
             while (rs.next()) {
+                HashMap<String, String> map = new HashMap<>();
                 map.put("ip",rs.getString("ip"));
                 map.put("username",rs.getString("username"));
                 map.put("password",rs.getString("password"));
                 ServerInfo.add(map);
-                map.clear();
             }
 
             //rs.close();
@@ -37,12 +36,10 @@ public class GetServerStatus implements Runnable {
 
     @Override
     public void run(){
-        HashMap<String, String> map;
         //遍历Server Info List
         for(int i = 0; i < ServerInfo.size(); i++) {
-            map = ServerInfo.get(i);//直接用=,使map指向ServerInfo.get(i),所以不要对map进行任何改变.
             Timer getdata = new Timer();
-            getdata.schedule(new GetData(map.get("ip"),map.get("username"),map.get("password")),0,5000);//为每个ip开启一个定时任务
+            getdata.schedule(new GetData(ServerInfo.get(i).get("ip"),ServerInfo.get(i).get("username"),ServerInfo.get(i).get("password")),0,10000);//为每个ip开启一个定时任务
         }
     }
 
@@ -52,7 +49,7 @@ public class GetServerStatus implements Runnable {
         private String ip;
         private String username;
         private String password;
-        private final String command = "";
+        private final String command = "top -b -n 1 | grep -e \"Cpu\" -e \"Mem\" ; ipmitool sdr | grep -e \"CPU0_Temp\" -e \"CPU1_Temp\" -e \"PSU1_VIN\" -e \"PSU1_IIN\" -e \"PSU2_VIN\" -e \"PSU2_IIN\" -e \"Total_Power\" -e \"CPU_Watts\"";
 
         GetData(String ip, String username, String password){
             this.ip = ip;
@@ -62,36 +59,54 @@ public class GetServerStatus implements Runnable {
 
         @Override
         public void run(){
-            Shell shell = new Shell(ip, username, password);//建立连接
-            shell.execute(command);//执行指令
-            ArrayList<String> stdout = shell.getOutput();//获得结果
-            System.out.println(stdout);
+
+            Shell shell = new Shell(ip, username, password);
+            shell.execute(command);
+            ArrayList<String> stdout = shell.getOutput();
+
+            System.out.println("ip:"+ip);
+            for(int i = 0;i < stdout.size(); i++){
+                System.out.println(stdout.get(i));
+            }
 
             //数据处理(专用)
-            Map<String,String> data = new HashMap<String, String>();
-            data.put("0",stdout.get(0));
-            data.put("1",stdout.get(1));
+            Map<String,Double> data = new HashMap<>();
+            data.put("CPU_id",StD(stdout.get(0),35,40));
+            data.put("total_Mem",StD(stdout.get(1),9,18));
+            data.put("avail_Mem",StD(stdout.get(2),55,64));
+            data.put("CPU_avg_Temp",(StD(stdout.get(3),19,37)+StD(stdout.get(4),19,37))/2.0);
+            data.put("VIN",StD(stdout.get(5),19,37)+StD(stdout.get(7),19,37));
+            data.put("IIN",StD(stdout.get(6),19,37)+StD(stdout.get(8),19,37));
+            data.put("Total_Power",StD(stdout.get(9),19,37));
+            data.put("CPU_Watts",StD(stdout.get(10),19,37));
+            System.out.println(data);
 
 
             //数据库
-            try{
-                Connection sqlconnection = SSsqlCoonection.getConnection();
-                Statement statement = sqlconnection.createStatement();
-                String sql = "";
-                statement.executeUpdate(sql);
-                //statement.close();
-                //sqlconnection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-            }
+//            try{
+//                Connection sqlconnection = SSsqlCoonection.getConnection();
+//                Statement statement = sqlconnection.createStatement();
+//                String sql = "";
+//                statement.executeUpdate(sql);
+//                //statement.close();
+//                //sqlconnection.close();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            } finally {
+//            }
 
         }
 
-        //把ipmitool sdr list字符串中的数据提取出来(专用)
-        private double ipmiStD(String str) {
-            String restr = new String();
-            str = str.substring(19,37);
+        /**
+         * 把字符串中的数据提取出来,String to double.若字符串中没有数字，则输出0.
+         * @param str
+         * @param start
+         * @param end
+         * @return
+         */
+        private double StD(String str, int start, int end) {
+            String restr = "0";
+            str = str.substring(start,end);
             for(int i=0;i<str.length();i++){
                 if((str.charAt(i)>=48 && str.charAt(i)<=57) || str.charAt(i)==46){
                     restr += str.charAt(i);
@@ -101,7 +116,5 @@ public class GetServerStatus implements Runnable {
         }
 
     }
-
-
 
 }

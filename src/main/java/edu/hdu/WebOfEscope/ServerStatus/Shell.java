@@ -5,7 +5,6 @@ import com.jcraft.jsch.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.DatagramSocket;
 import java.util.ArrayList;
 
 public class Shell {
@@ -42,7 +41,7 @@ public class Shell {
             channelExec.setInputStream(null);
             BufferedReader input = new BufferedReader(new InputStreamReader(channelExec.getInputStream()));
             channelExec.connect();
-            System.out.println("The remote command is :" + command);
+            System.out.println("Command:" + command);
 
             String line;
             while((line = input.readLine()) != null) {

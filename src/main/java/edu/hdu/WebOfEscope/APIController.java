@@ -4,8 +4,6 @@ import edu.hdu.WebOfEscope.WebFunction.WSNFunction;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,8 +23,18 @@ public class APIController {
     }
 
     @RequestMapping(value = "/WSN/getRealTime", method = RequestMethod.GET)
-    public ArrayList<HashMap<String, String>> WSNgetRealTime() throws SQLException {
+    public ArrayList<HashMap<String, Object>> WSNgetRealTime(){
         return WSNFunction.getRealTime();
+    }
+
+    @RequestMapping(value = "/WSN/getLocation", method = RequestMethod.GET)
+    public ArrayList<HashMap<String, Object>> WSNgetLocation(){
+        return WSNFunction.getLocation();
+    }
+
+    @RequestMapping(value = "/WSN/getOnline", method = RequestMethod.GET)
+    public ArrayList<String> WSNgetOnline(){
+        return WSNFunction.getOnline();
     }
 
 }

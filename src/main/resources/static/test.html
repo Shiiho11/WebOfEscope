@@ -31,6 +31,9 @@
                 <th>smogTime</th>
                 <th>ultra</th>
                 <th>ultraTime</th>
+                <th>x</th>
+                <th>y</th>
+                <th>z</th>
             </tr>
         </table>
     </div>
@@ -55,6 +58,7 @@
         testXHR.open("GET", "http://127.0.0.1:8080/escope/api/test",true);
         testXHR.send();
     }
+
 
     function getWSNrealTime() {
         var table = document.getElementById("WSNrealTimeTable");
