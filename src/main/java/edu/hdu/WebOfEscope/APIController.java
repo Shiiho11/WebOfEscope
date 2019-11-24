@@ -1,5 +1,6 @@
 package edu.hdu.WebOfEscope;
 
+import edu.hdu.WebOfEscope.WebFunction.SSFunction;
 import edu.hdu.WebOfEscope.WebFunction.WSNFunction;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,6 +36,16 @@ public class APIController {
     @RequestMapping(value = "/WSN/getOnline", method = RequestMethod.GET)
     public ArrayList<String> WSNgetOnline(){
         return WSNFunction.getOnline();
+    }
+
+    @RequestMapping(value = "/SS/getRealTime", method = RequestMethod.GET)
+    public ArrayList<HashMap<String, Object>> SSgetRealTime(){
+        return SSFunction.getRealTime();
+    }
+
+    @RequestMapping(value = "/SS/getLocation", method = RequestMethod.GET)
+    public ArrayList<HashMap<String, Object>> SSgetLocation(){
+        return SSFunction.getLocation();
     }
 
 }

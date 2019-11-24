@@ -66,17 +66,15 @@ public class WSNcache {
 
         @Override
         public void run(){
-            System.out.println("History data WriteToDatabase start");
-            Connection sqlConnetion = null;
-            Statement statement = null;
+            System.out.println("WSN History data WriteToDatabase start");
             try{
-                sqlConnetion = WSNsqlCoonection.getConnection();
-                statement = sqlConnetion.createStatement();
+                Connection sqlConnetion = WSNsqlCoonection.getConnection();
+                Statement statement = sqlConnetion.createStatement();
                 for(int i=0; i < data.size(); i++){
                     statement.addBatch("INSERT INTO "+data.get(i).get("head")+"(address,value,time) values("+data.get(i).get("address")+","+data.get(i).get("value")+","+data.get(i).get("time")+")");
                 }
                 statement.executeBatch();
-                System.out.println("History data WriteToDatabase finished");
+                System.out.println("WSN History data WriteToDatabase finished");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
